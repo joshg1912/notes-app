@@ -31,6 +31,27 @@ function selectNote($note) {
         $activeNote.classList.remove("active");
     }
     $note.classList.add("active");
+
+    document.querySelector(".note-editor-input").value = $note.dataset.body;
+    document.querySelector(".note-editor-info").innerHTML = formatTimestamp(parseInt($note.dataset.timestamp));
+}
+
+
+function updateNote() {
+    var body = this.value;
+    var timestamp = Date.now();
+    console.log(body, timestamp);
+
+    var $note = document.querySelector(".note-selector.active");
+    $note.dataset.body = body;
+    $note.dataset.timestamp = timestamp;
+
+    document.querySelector(".note-editor-info").innerHTMl = formatTimestamp(timestamp);
+    document.querySelector(".note-selector.active .note-selector-title").innerHTML = formatTitle(body);
+    document.querySelector(".note-selector.active .note-selector-timestamp").innerHTML = formatTimestamp(timestamp);
+
+    document.querySelector(".note-selectors").removeChild($note);
+    document.querySelector(".note-selectors").prepend($note);
 }
 
 
@@ -47,7 +68,12 @@ var htmlString = "";
 
 transformNotes(notes).forEach(function (note) {
     htmlString += `
-     <div class="note-selector" onclick="selectNote(this)">
+     <div 
+     class="note-selector" 
+     onclick="selectNote(this)" 
+     data-body="${note.body}"
+     data-timestamp="${note.timestamp}"
+     >
      <p class="note-selector-title">${formatTitle(note.body)}</p>
      <p class="note-selector-timestamp">${formatTimestamp(note.timestamp)}</p>
      </div>
@@ -55,3 +81,4 @@ transformNotes(notes).forEach(function (note) {
 });
 
 document.querySelector(".note-selectors").innerHTML = htmlString;
+document.querySelector(".note-editor-input").addEventListener("input", updateNote);
